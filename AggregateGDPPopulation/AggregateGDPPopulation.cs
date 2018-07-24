@@ -25,7 +25,7 @@ namespace AggregateGDPPopulation
                 //string outputPath = @"../../../../AggregateGDPPopulation/output/output.json";
                 Task<string> fileData = ReadFileAsync(filepath);
                 Task<string> mapperData = ReadFileAsync(mapperPath);
-                await Task.WhenAll(fileData, mapperData);    
+                await Task.WhenAll(fileData, mapperData);
                 string fData = fileData.Result;
                 string mData = mapperData.Result;
                 string[] contents = fData.Replace("\"", string.Empty).Split('\n');
