@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace AggregateGDPPopulation
 {
@@ -14,16 +15,23 @@ namespace AggregateGDPPopulation
     }
     public class Class1
     {
-        public static void Aggregate()
+       async public static Task AggregateAsync()
         {
-            Dictionary<string, CountryGDPPop> result = new Dictionary<string, CountryGDPPop>();
+            Dictionary<string,CountryGDPPop> result = new Dictionary<string, CountryGDPPop>();
             try
             {
-                string filename = @"../../../../AggregateGDPPopulation/data/datafile.csv";
-                string[] contents = File.ReadAllText(filename).Replace("\"", string.Empty).Split('\n');
+                string filepath = @"../../../../AggregateGDPPopulation/data/datafile.csv";
+                string mapperPath = @"../../../../AggregateGDPPopulation/continent.json";
+                //string outputPath = @"../../../../AggregateGDPPopulation/output/output.json";
+                Task<string> fileData = ReadFileAsync(filepath);
+                Task<string> mapperData = ReadFileAsync(mapperPath);
+                await Task.WhenAll(fileData, mapperData);
+                string fData = fileData.Result;
+                string mData = mapperData.Result;
+                string[] contents = fData.Replace("\"", string.Empty).Split('\n');
                 // Dictionary<String, String> countryContinentMapper;
                 string[] headerRows = contents[0].Split(',');
-                Dictionary<string,string> mapper = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(@"../../../../AggregateGDPPopulation/continent.json"));
+                Dictionary<string,string> mapper = JsonConvert.DeserializeObject<Dictionary<string, string>>(mData);
                 int indexOfCountry = Array.IndexOf(headerRows, "Country Name");
                 int indexOfPopulation = Array.IndexOf(headerRows, "Population (Millions) 2012");
                 int indexOfGDP = Array.IndexOf(headerRows, "GDP Billions (USD) 2012");
@@ -46,7 +54,24 @@ namespace AggregateGDPPopulation
             }
 
             string json = JsonConvert.SerializeObject(result,Formatting.Indented);
-            File.WriteAllText(@"../../../../AggregateGDPPopulation/output/output.json", json);
+            WriteDataAsync(@"../../../../AggregateGDPPopulation/output/output.json", json);
+
+        }
+        public static async Task<string> ReadFileAsync(string filepath)
+        {
+            string fileData = "";
+            using (StreamReader streamReader = new StreamReader(filepath))
+            {
+                fileData = await streamReader.ReadToEndAsync();
+            }
+            return fileData;
+        }
+        public static async void WriteDataAsync(string filepath, string contents)
+        {
+            using (StreamWriter streamwriter = new StreamWriter(filepath))
+            {
+                await streamwriter.WriteAsync(contents);
+            };
 
         }
     }

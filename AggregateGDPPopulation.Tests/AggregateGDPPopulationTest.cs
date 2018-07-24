@@ -3,6 +3,7 @@ using Xunit;
 using AggregateGDPPopulation;
 using System.IO;
 using Newtonsoft.Json.Linq;
+using System.Threading.Tasks;
 
 namespace AggregateGDPPopulation.Tests
 {
@@ -10,12 +11,15 @@ namespace AggregateGDPPopulation.Tests
     {
 
         [Fact]
-        public void Test1()
+        async public void Test1()
         {  
-             Class1.Aggregate();
-            string s = File.ReadAllText("../../../../AggregateGDPPopulation/output/output.json");
-            string str = File.ReadAllText("../../../expected-output.json");
-        Assert.Equal(s, str);
+            await Class1.AggregateAsync();
+            var s = Class1.ReadFileAsync("../../../../AggregateGDPPopulation/output/output.json");
+            var str = Class1.ReadFileAsync("../../../expected-output.json");
+            
+            string actual = await s;
+            string expected=await str;
+        Assert.Equal(actual, expected);
          }
 }
  }
