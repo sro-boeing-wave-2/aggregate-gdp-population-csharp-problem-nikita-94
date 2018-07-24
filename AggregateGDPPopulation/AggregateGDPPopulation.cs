@@ -19,7 +19,7 @@ namespace AggregateGDPPopulation
         {
             Dictionary<string,CountryGDPPop> result = new Dictionary<string, CountryGDPPop>();
             try
-            {
+            { 
                 string filepath = @"../../../../AggregateGDPPopulation/data/datafile.csv";
                 string mapperPath = @"../../../../AggregateGDPPopulation/continent.json";
                 //string outputPath = @"../../../../AggregateGDPPopulation/output/output.json";
